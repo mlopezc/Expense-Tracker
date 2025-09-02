@@ -1,0 +1,144 @@
+@startuml Database Layer Detail
+
+title Expense Tracker - Database Layer (Esquema de Base de Datos y Relaciones)
+
+!theme plain
+
+entity "users" as users {
+    * id : INTEGER <<PK>>
+    --
+    * email : VARCHAR(255) <<UNIQUE>>
+    * password_hash : VARCHAR(255)
+    first_name : VARCHAR(100)
+    last_name : VARCHAR(100)
+    created_at : DATETIME
+    updated_at : DATETIME
+}
+
+entity "categories" as categories {
+    * id : INTEGER <<PK>>
+    --
+    * name : VARCHAR(100)
+    description : TEXT
+    color : VARCHAR(7)
+    icon : VARCHAR(50)
+    user_id : INTEGER <<FK>>
+    is_default : BOOLEAN
+    created_at : DATETIME
+    updated_at : DATETIME
+}
+
+entity "expenses" as expenses {
+    * id : INTEGER <<PK>>
+    --
+    * amount : DECIMAL(10,2)
+    * description : TEXT
+    * date : DATE
+    * category_id : INTEGER <<FK>>
+    * user_id : INTEGER <<FK>>
+    receipt_filename : VARCHAR(255)
+    tags : TEXT
+    notes : TEXT
+    created_at : DATETIME
+    updated_at : DATETIME
+}
+
+users ||--o{ expenses : "has many"
+users ||--o{ categories : "has many"
+categories ||--o{ expenses : "categorizes"
+
+note right of expenses
+Performance Indexes:
+- idx_expenses_user_id ON (user_id)
+- idx_expenses_date ON (date)  
+- idx_expenses_category_id ON (category_id)
+
+Query Optimization:
+- Composite index for user_id + date
+- Full-text search on description + notes
+- Category filtering optimization
+end note
+
+note right of categories
+Performance Indexes:
+- idx_categories_user_id ON (user_id)
+
+Category Types:
+- System categories (user_id = NULL, is_default = TRUE)
+- User categories (user_id = user.id, is_default = FALSE)
+
+Default Categories:
+- Food & Dining, Transportation, Shopping
+- Entertainment, Bills & Utilities, Healthcare
+- Travel, Education
+end note
+
+note left of users
+Authentication Features:
+- Unique email constraint
+- bcrypt password hashing
+- JWT token-based auth
+- Soft delete capability
+
+User Data:
+- Profile information
+- Account creation tracking  
+- Last login tracking (future)
+- Preferences storage (future)
+end note
+
+class "connection.js" as Connection
+class "database.js" as Config
+class "schema.sql" as Schema
+class "seed.sql" as Seed
+class "seeder.js" as Seeder
+
+class "SQLite3" as SQLite
+class "PostgreSQL" as PostgreSQL
+class "Knex.js" as Knex
+
+Connection --> Knex : uses query builder
+Config --> Connection : configures
+Schema ..> users : creates
+Schema ..> categories : creates  
+Schema ..> expenses : creates
+Seed ..> categories : populates default
+Seeder --> Seed : executes
+
+SQLite --> Connection : development
+PostgreSQL --> Connection : production
+
+note bottom of Knex
+Knex.js Features:
+- Cross-database compatibility
+- Query builder with SQL generation
+- Migration management
+- Connection pooling
+- Transaction support
+- Promise-based interface
+
+Configuration:
+- SQLite3 for development
+- PostgreSQL for production
+- Connection retry logic
+- Query logging in dev mode
+end note
+
+note bottom of expenses
+Data Constraints:
+- Amount must be positive decimal
+- Date cannot be in the future
+- Category must exist and be accessible
+- User must own the expense
+- Receipt filename length limit
+- Tags array max 10 items
+- Notes max 1000 characters
+
+Business Rules:
+- Users can only see their own expenses
+- Default categories available to all users
+- Custom categories private to owner
+- Soft delete preserves referential integrity
+end note
+
+@enduml

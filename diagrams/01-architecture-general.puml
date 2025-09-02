@@ -1,0 +1,44 @@
+@startuml Expense Tracker - Arquitectura General (C4 Model - Nivel 1)
+!define RECTANGLE class
+!define PERSON actor
+
+title Expense Tracker - Arquitectura General\n(C4 Model - Nivel 1 - Sistema Context)
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+' Personas
+Person(user, "Usuario", "Persona que gestiona sus gastos personales mediante la aplicación")
+
+' Sistema Principal
+System(expense_tracker, "Expense Tracker", "Sistema web full-stack para seguimiento y análisis de gastos personales. Permite registrar, categorizar y analizar gastos con reportes visuales.")
+
+' Sistemas Externos
+System_Ext(file_system, "Sistema de Archivos", "Almacenamiento local de recibos y archivos adjuntos")
+System_Ext(browser, "Navegador Web", "Cliente para acceso a la aplicación")
+
+' Relaciones
+Rel(user, browser, "Accede a la aplicación", "HTTPS")
+Rel(browser, expense_tracker, "Realiza peticiones", "HTTP/REST API")
+Rel(expense_tracker, file_system, "Almacena/lee archivos", "File I/O")
+
+' Notas y contexto adicional
+note right of expense_tracker
+  <b>Funcionalidades principales:</b>
+  • Autenticación JWT
+  • CRUD de gastos
+  • Gestión de categorías
+  • Reportes y análisis
+  • Carga de recibos
+  • Filtrado avanzado
+end note
+
+note left of user
+  <b>Casos de uso:</b>
+  • Registrar gastos diarios
+  • Categorizar transacciones
+  • Analizar patrones de gasto
+  • Generar reportes
+  • Gestionar presupuesto personal
+end note
+
+@enduml

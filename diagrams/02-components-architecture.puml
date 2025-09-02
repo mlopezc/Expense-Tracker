@@ -1,0 +1,100 @@
+@startuml Expense Tracker - Componentes (C4 Model - Nivel 2)
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Expense Tracker - Arquitectura de Componentes\n(C4 Model - Nivel 2 - Component Diagram)
+
+Person(user, "Usuario", "Persona que gestiona sus gastos")
+
+System_Boundary(expense_tracker, "Expense Tracker System") {
+    Container(spa, "Single Page Application", "React 18 + Vite", "Interfaz de usuario web que proporciona todas las funcionalidades de gestión de gastos")
+    Container(api, "API REST", "Express.js + Node.js", "Proporciona todas las funcionalidades del negocio vía API REST")
+    Container(db, "Base de Datos", "SQLite3 / PostgreSQL", "Almacena usuarios, gastos, categorías y configuraciones")
+    Container(file_storage, "Almacenamiento de Archivos", "Sistema de Archivos Local", "Almacena recibos y documentos adjuntos")
+}
+
+System_Ext(browser, "Navegador Web", "Chrome, Firefox, Safari, Edge")
+
+Container_Boundary(spa, "Frontend React Components") {
+    Component(router, "Router", "React Router v6", "Manejo de navegación y rutas")
+    Component(auth_context, "Auth Context", "React Context", "Estado global de autenticación")
+    Component(expense_context, "Expense Context", "React Context", "Estado global de gastos")
+    Component(pages, "Pages", "React Components", "Dashboard, Expenses, Categories, Reports")
+    Component(components, "UI Components", "React + Tailwind", "Formularios, listas, filtros, layout")
+    Component(api_service, "API Service", "Axios", "Cliente HTTP con interceptors")
+}
+
+Container_Boundary(api, "Backend Express Components") {
+    Component(routes, "Routes", "Express Routes", "Endpoints REST (/auth, /expenses, /categories)")
+    Component(controllers, "Controllers", "Business Logic", "Manejo de requests y validación")
+    Component(middleware, "Middleware", "Express Middleware", "Autenticación JWT, CORS, logging")
+    Component(models, "Models", "Data Models", "User, Expense, Category con métodos CRUD")
+    Component(database_conn, "Database Connection", "Knex.js", "Query builder y conexión a BD")
+}
+
+Container_Boundary(db, "Database Layer Components") {
+    Component(users_table, "Users Table", "SQL Table", "Información de usuarios y autenticación")
+    Component(expenses_table, "Expenses Table", "SQL Table", "Registros de gastos con metadatos")
+    Component(categories_table, "Categories Table", "SQL Table", "Categorías predefinidas y personalizadas")
+}
+
+' Relationships - User interactions
+Rel(user, browser, "Utiliza", "UI")
+Rel(browser, spa, "Carga y ejecuta", "HTTP/HTTPS")
+
+' Frontend internal relationships
+Rel(spa, router, "Usa")
+Rel(router, pages, "Renderiza")
+Rel(pages, components, "Compone")
+Rel(pages, auth_context, "Consume estado")
+Rel(pages, expense_context, "Consume estado")
+Rel(auth_context, api_service, "Realiza llamadas")
+Rel(expense_context, api_service, "Realiza llamadas")
+Rel(api_service, api, "HTTP REST", "JSON/Bearer Token")
+
+' Backend internal relationships
+Rel(api, routes, "Maneja requests")
+Rel(routes, middleware, "Aplica middleware")
+Rel(middleware, controllers, "Ejecuta")
+Rel(controllers, models, "Utiliza")
+Rel(models, database_conn, "Query")
+Rel(database_conn, db, "SQL", "SQLite/PostgreSQL")
+
+' Database relationships
+Rel(users_table, expenses_table, "1:N", "FK user_id")
+Rel(categories_table, expenses_table, "1:N", "FK category_id")
+
+' File storage relationships
+Rel(api, file_storage, "Lee/Escribe", "Multer upload")
+
+' Technology stack annotations
+note right of spa
+  <b>Tech Stack:</b>
+  • React 18 + Hooks
+  • React Router v6.20.1
+  • Tailwind CSS v3.3.6
+  • Vite v5.0.0
+  • Axios v1.6.2
+  • Chart.js + react-chartjs-2
+  • Heroicons
+end note
+
+note right of api
+  <b>Tech Stack:</b>
+  • Node.js + Express v4.18.2
+  • JWT Authentication
+  • Joi validation
+  • Multer file upload
+  • bcryptjs hashing
+  • Morgan logging
+  • CORS enabled
+end note
+
+note right of db
+  <b>Database:</b>
+  • SQLite3 v5.1.6 (dev)
+  • PostgreSQL (production)
+  • Knex.js v3.0.1 query builder
+  • Migrations & seeding support
+end note
+
+@enduml

@@ -1,0 +1,173 @@
+@startuml Backend Services Detail
+!define RECTANGLE class
+
+title Expense Tracker - Componentes Backend\n(Detalle de Servicios y Middleware)
+
+package "Backend (Express.js + Node.js)" {
+    
+    package "Entry Point" {
+        [server.js] as Server
+    }
+    
+    package "Routes Layer" {
+        [auth.js] as AuthRoute
+        [expenses.js] as ExpenseRoute
+        [categories.js] as CategoryRoute  
+        [reports.js] as ReportRoute
+    }
+    
+    package "Middleware" {
+        [auth.js] as AuthMiddleware
+        [CORS] as CORS
+        [Morgan] as Morgan
+        [Express.json] as JSON
+        [Multer] as Multer
+    }
+    
+    package "Controllers" {
+        [authController.js] as AuthController
+        [expenseController.js] as ExpenseController
+        [categoryController.js] as CategoryController
+    }
+    
+    package "Models" {
+        [User.js] as UserModel
+        [Expense.js] as ExpenseModel
+        [Category.js] as CategoryModel
+    }
+    
+    package "Database Layer" {
+        [connection.js] as DBConnection
+        [database.js] as DBConfig
+        [schema.sql] as Schema
+        [seed.sql] as Seed
+        [seeder.js] as Seeder
+    }
+    
+    package "Utilities" {
+        [auth.js] as AuthUtils
+        [Joi Validation] as Validation
+        [bcryptjs] as Bcrypt
+        [jsonwebtoken] as JWT
+    }
+    
+    package "File Storage" {
+        [uploads/] as Uploads
+    }
+}
+
+' Server setup relationships
+Server --> AuthRoute : "mounts /api/auth"
+Server --> ExpenseRoute : "mounts /api/expenses" 
+Server --> CategoryRoute : "mounts /api/categories"
+Server --> ReportRoute : "mounts /api/reports"
+Server --> CORS : "applies"
+Server --> Morgan : "applies"
+Server --> JSON : "applies"
+Server --> DBConnection : "initializes"
+
+' Route to Controller relationships  
+AuthRoute --> AuthController : "delegates to"
+ExpenseRoute --> ExpenseController : "delegates to"
+CategoryRoute --> CategoryController : "delegates to"
+
+' Middleware relationships
+AuthRoute --> AuthMiddleware : "protects routes"
+ExpenseRoute --> AuthMiddleware : "protects routes"
+CategoryRoute --> AuthMiddleware : "protects routes"
+ExpenseRoute --> Multer : "handles file uploads"
+
+' Controller to Model relationships
+AuthController --> UserModel : "uses"
+AuthController --> AuthUtils : "uses"
+ExpenseController --> ExpenseModel : "uses"
+ExpenseController --> CategoryModel : "validates categories"
+CategoryController --> CategoryModel : "uses"
+
+' Model to Database relationships
+UserModel --> DBConnection : "queries via"
+ExpenseModel --> DBConnection : "queries via"
+CategoryModel --> DBConnection : "queries via"
+DBConnection --> DBConfig : "configured by"
+
+' Validation and utilities
+AuthController --> Validation : "validates input"
+ExpenseController --> Validation : "validates input"
+CategoryController --> Validation : "validates input"
+AuthController --> Bcrypt : "hashes passwords"
+AuthController --> JWT : "generates tokens"
+AuthMiddleware --> JWT : "verifies tokens"
+
+' Database setup
+DBConnection --> Schema : "creates tables"
+DBConnection --> Seed : "populates data"
+Seeder --> Seed : "executes"
+
+' File storage
+ExpenseController --> Uploads : "stores receipts"
+Multer --> Uploads : "saves files to"
+
+note right of AuthController
+  <b>Authentication Endpoints:</b>
+  POST /register - Create new user
+  POST /login - Authenticate user
+  POST /logout - Invalidate token
+  GET /me - Get current user info
+  
+  <b>Features:</b>
+  • Password hashing with bcrypt
+  • JWT token generation
+  • Input validation with Joi
+  • Email uniqueness checking
+end note
+
+note right of ExpenseController
+  <b>Expense Endpoints:</b>
+  GET /expenses - List with filtering
+  POST /expenses - Create new expense
+  GET /expenses/:id - Get single expense
+  PUT /expenses/:id - Update expense
+  DELETE /expenses/:id - Delete expense
+  GET /expenses/summary - Get totals
+  
+  <b>Features:</b>
+  • Pagination support
+  • Advanced filtering (date, category, search)
+  • File upload for receipts
+  • Comprehensive validation
+end note
+
+note right of ExpenseModel
+  <b>Expense Model Methods:</b>
+  • create(data, userId)
+  • findById(id)
+  • findByUserId(userId, options)
+  • countByUserId(userId, options)
+  • getTotalByUserId(userId, options)
+  • update(updateData)
+  • delete()
+  • belongsToUser(userId)
+  • toJSON()
+  
+  <b>Features:</b>
+  • Category joins for enriched data
+  • JSON tag support
+  • Soft validation
+  • User ownership checking
+end note
+
+note right of AuthMiddleware
+  <b>JWT Middleware:</b>
+  • Extracts Bearer token from headers
+  • Verifies token signature
+  • Adds user info to req.user
+  • Handles expired/invalid tokens
+  • Supports optional authentication
+  
+  <b>Security Features:</b>
+  • Token blacklisting support
+  • Rate limiting capability
+  • Request logging
+end note
+
+@enduml

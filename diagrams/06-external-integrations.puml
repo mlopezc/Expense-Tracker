@@ -1,0 +1,198 @@
+@startuml External Integrations and Middleware
+!define RECTANGLE class
+
+title Expense Tracker - Integraciones Externas y Middleware\n(Servicios de Soporte y Utilidades)
+
+package "External Services & Integrations" {
+    
+    package "Development Tools" {
+        [Vite Dev Server] as Vite
+        [Nodemon] as Nodemon
+        [Hot Module Reload] as HMR
+        [ESLint] as ESLint
+        [Prettier] as Prettier
+    }
+    
+    package "Build & Deployment" {
+        [Vite Build] as ViteBuild
+        [npm Scripts] as NPM
+        [Concurrently] as Concurrent
+        [Process Manager] as PM
+    }
+    
+    package "File System Integration" {
+        [Local File Storage] as LocalFS
+        [Multer Upload] as MulterUpload
+        [Static File Serving] as StaticServ
+    }
+    
+    package "Security & Auth" {
+        [JWT Service] as JWTService
+        [bcrypt Hashing] as BcryptHash
+        [CORS Policy] as CORSPolicy
+        [Rate Limiting] as RateLimit
+    }
+    
+    package "Logging & Monitoring" {
+        [Morgan Logger] as MorganLog
+        [Console Logging] as ConsoleLog
+        [Error Tracking] as ErrorTrack
+    }
+    
+    package "Data Processing" {
+        [Joi Validation] as JoiValid
+        [Date-fns Processing] as DateFns
+        [Chart.js Rendering] as ChartJS
+        [JSON Processing] as JSONProc
+    }
+    
+    package "HTTP & Networking" {
+        [Axios Client] as AxiosClient
+        [Express Server] as ExpressServ
+        [HTTP Middleware] as HTTPMiddleware
+    }
+}
+
+' Frontend integrations
+package "Frontend Integration Layer" {
+    [React App] --> Vite : "dev server"
+    [React App] --> ViteBuild : "production build"
+    [React App] --> HMR : "development"
+    [React App] --> ESLint : "code quality"
+    [React App] --> AxiosClient : "HTTP requests"
+    [React App] --> DateFns : "date manipulation"
+    [React App] --> ChartJS : "data visualization"
+}
+
+' Backend integrations
+package "Backend Integration Layer" {
+    [Express Server] --> ExpressServ : "web framework"
+    [Express Server] --> MorganLog : "request logging"
+    [Express Server] --> CORSPolicy : "cross-origin requests"
+    [Express Server] --> HTTPMiddleware : "request processing"
+    [Express Server] --> JWTService : "authentication"
+    [Express Server] --> BcryptHash : "password security"
+    [Express Server] --> JoiValid : "input validation"
+    [Express Server] --> MulterUpload : "file uploads"
+    [Express Server] --> LocalFS : "file storage"
+    [Express Server] --> StaticServ : "serve uploaded files"
+}
+
+' Development workflow
+package "Development Workflow" {
+    NPM --> Concurrent : "runs multiple processes"
+    Concurrent --> Vite : "frontend dev server"
+    Concurrent --> Nodemon : "backend auto-restart"
+    Nodemon --> [Express Server] : "watches changes"
+    ESLint --> Prettier : "code formatting"
+}
+
+' Production deployment
+package "Production Deployment" {
+    ViteBuild --> [Static Assets] : "generates"
+    NPM --> PM : "process management"
+    PM --> [Express Server] : "production mode"
+}
+
+note right of JWTService
+  <b>JWT Configuration:</b>
+  • Secret key from environment
+  • 24h token expiration
+  • Bearer token format
+  • Automatic refresh capability
+  • Blacklist support (future)
+  
+  <b>Security Features:</b>
+  • HMAC SHA-256 signing
+  • Payload encryption option
+  • Token rotation strategy
+end note
+
+note right of MulterUpload
+  <b>File Upload Configuration:</b>
+  • Storage: Local disk (/uploads)
+  • Size limit: 10MB per file
+  • Allowed types: Images (jpg, png, pdf)
+  • Filename sanitization
+  • Path traversal protection
+  
+  <b>Future Integrations:</b>
+  • Cloud storage (AWS S3, Cloudinary)
+  • Image optimization
+  • Virus scanning
+end note
+
+note right of JoiValid
+  <b>Validation Schemas:</b>
+  • User registration/login
+  • Expense creation/update
+  • Category management
+  • Query parameters
+  • File upload metadata
+  
+  <b>Validation Rules:</b>
+  • Email format validation
+  • Password strength requirements
+  • Amount precision limits
+  • Date range constraints
+  • String length limits
+end note
+
+note right of CORSPolicy
+  <b>CORS Configuration:</b>
+  • Origin: localhost:3000 (dev)
+  • Methods: GET, POST, PUT, DELETE
+  • Headers: Authorization, Content-Type
+  • Credentials: true
+  • Preflight caching: 24h
+  
+  <b>Production CORS:</b>
+  • Whitelist specific domains
+  • Secure headers enforcement
+  • Rate limiting by origin
+end note
+
+note left of ChartJS
+  <b>Chart.js Integration:</b>
+  • Line charts for trends
+  • Pie charts for categories
+  • Bar charts for comparisons
+  • Responsive design
+  • Theme customization
+  
+  <b>Chart Types Used:</b>
+  • Monthly expense trends
+  • Category breakdown
+  • Year-over-year comparison
+  • Budget vs actual spending
+end note
+
+note left of DateFns
+  <b>Date Processing:</b>
+  • Date formatting and parsing
+  • Timezone handling
+  • Range calculations
+  • Period grouping (monthly, yearly)
+  • Date validation
+  
+  <b>Use Cases:</b>
+  • Report date ranges
+  • Expense filtering
+  • Trend analysis
+  • Calendar integration
+end note
+
+' External Service Dependencies
+package "Third-Party Dependencies" {
+    [npm Registry] as NPM_REG
+    [CDN Services] as CDN
+    [Browser APIs] as BrowserAPI
+    [Node.js Runtime] as NodeJS
+}
+
+[React App] --> BrowserAPI : "localStorage, fetch"
+[Express Server] --> NodeJS : "runtime environment"
+NPM --> NPM_REG : "package management"
+CDN --> [Static Assets] : "optional delivery"
+
+@enduml

@@ -1,0 +1,140 @@
+@startuml Frontend Components Detail
+!define RECTANGLE class
+
+title Expense Tracker - Componentes Frontend\n(Detalle de UI Components y Servicios)
+
+package "Frontend (React + Vite)" {
+    
+    package "Routing Layer" {
+        [App.jsx] as App
+        [ProtectedRoute] as Protected
+    }
+    
+    package "Context Providers" {
+        [AuthProvider] as AuthCtx
+        [ExpenseProvider] as ExpenseCtx
+    }
+    
+    package "Pages" {
+        [Dashboard] as Dashboard
+        [Login] as Login  
+        [Register] as Register
+        [Expenses] as Expenses
+        [Categories] as Categories
+        [Reports] as Reports
+    }
+    
+    package "Common Components" {
+        [Layout] as Layout
+        [Navbar] as Navbar
+        [Sidebar] as Sidebar
+        [LoadingSpinner] as Loading
+    }
+    
+    package "Feature Components" {
+        package "Expenses" {
+            [ExpenseList] as ExpList
+            [ExpenseFilters] as ExpFilters
+            [ExpenseForm] as ExpForm
+        }
+        
+        package "Categories" {
+            [CategoryList] as CatList
+            [CategoryForm] as CatForm
+        }
+    }
+    
+    package "Services & Utils" {
+        [api.js] as ApiService
+        [localStorage] as Storage
+    }
+    
+    package "Styling" {
+        [Tailwind CSS] as Tailwind
+        [index.css] as CSS
+    }
+}
+
+' Routing relationships
+App --> Protected : "wraps routes"
+App --> AuthCtx : "provides context"
+App --> ExpenseCtx : "provides context"
+Protected --> Dashboard : "protects"
+Protected --> Expenses : "protects" 
+Protected --> Categories : "protects"
+Protected --> Reports : "protects"
+
+' Layout relationships
+Layout --> Navbar : "includes"
+Layout --> Sidebar : "includes"
+Dashboard --> Layout : "uses"
+Expenses --> Layout : "uses"
+Categories --> Layout : "uses"
+Reports --> Layout : "uses"
+
+' Feature component relationships
+Expenses --> ExpList : "renders"
+Expenses --> ExpFilters : "renders"
+Expenses --> ExpForm : "renders"
+Categories --> CatList : "renders"
+Categories --> CatForm : "renders"
+
+' Context relationships
+AuthCtx --> ApiService : "uses"
+ExpenseCtx --> ApiService : "uses"
+ApiService --> Storage : "manages tokens"
+
+' Component usage
+ExpList --> Loading : "shows while loading"
+CatList --> Loading : "shows while loading"
+ExpForm --> ExpenseCtx : "updates state"
+CatForm --> ExpenseCtx : "updates state"
+
+' Styling relationships
+Dashboard --> Tailwind : "styled with"
+Expenses --> Tailwind : "styled with"
+Categories --> Tailwind : "styled with"
+Reports --> Tailwind : "styled with"
+CSS --> Tailwind : "configures"
+
+note right of ApiService
+  <b>API Service Features:</b>
+  • Axios instance configured
+  • Request interceptors (auth token)
+  • Response interceptors (error handling)
+  • Base URL configuration
+  • Automatic token refresh logic
+end note
+
+note right of AuthCtx
+  <b>Auth Context State:</b>
+  • user: User object or null
+  • token: JWT token
+  • loading: boolean
+  • error: string or null
+  
+  <b>Actions:</b>
+  • login(email, password)
+  • register(userData)
+  • logout()
+  • clearError()
+end note
+
+note right of ExpenseCtx
+  <b>Expense Context State:</b>
+  • expenses: Array of expenses
+  • categories: Array of categories
+  • filters: Current filter state
+  • pagination: Page info
+  • loading: boolean
+  • error: string or null
+  
+  <b>Actions:</b>
+  • fetchExpenses(filters)
+  • createExpense(data)
+  • updateExpense(id, data)
+  • deleteExpense(id)
+  • fetchCategories()
+end note
+
+@enduml

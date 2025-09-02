@@ -1,0 +1,192 @@
+@startuml Data Flow Diagram
+!theme plain
+
+title Expense Tracker - Diagrama de Flujo de Datos\n(Entrada, Procesamiento, Almacenamiento y Presentación)
+
+' Data Flow Layers
+package "Data Input Layer" as input {
+    actor User as user
+    interface "Web Forms" as forms
+    interface "File Upload" as upload
+    interface "API Endpoints" as endpoints
+}
+
+package "Data Processing Layer" as processing {
+    process "Authentication\nMiddleware" as auth_proc
+    process "Input Validation\n(Joi Schemas)" as validation
+    process "Business Logic\n(Controllers)" as business
+    process "Data Transformation\n(Models)" as transform
+    process "File Processing\n(Multer)" as file_proc
+}
+
+package "Data Storage Layer" as storage {
+    database "SQLite/PostgreSQL\nDatabase" as db
+    folder "File System\n(uploads/)" as files
+    storage "Browser Storage\n(localStorage)" as local_storage
+}
+
+package "Data Output Layer" as output {
+    interface "REST API\nResponses" as api_response
+    interface "React Components\nUI" as ui_components
+    interface "Charts & Reports\n(Chart.js)" as charts
+    interface "Static Files\n(Images/PDFs)" as static_files
+}
+
+' Data Flow Processes
+rectangle "Data Flow Processes" as flows {
+    
+    ' User Registration/Login Flow
+    process "User Authentication Flow" as auth_flow {
+        step "1. User submits credentials" as step1
+        step "2. Validate input format" as step2  
+        step "3. Hash password / Verify hash" as step3
+        step "4. Generate/Verify JWT token" as step4
+        step "5. Store user session" as step5
+        step "6. Return user data + token" as step6
+    }
+    
+    ' Expense Management Flow
+    process "Expense Management Flow" as expense_flow {
+        step "1. User enters expense data" as exp1
+        step "2. Validate amount, date, category" as exp2
+        step "3. Process receipt upload (optional)" as exp3
+        step "4. Apply business rules" as exp4
+        step "5. Save to database" as exp5
+        step "6. Update UI state" as exp6
+    }
+    
+    ' Data Retrieval Flow
+    process "Data Retrieval Flow" as retrieve_flow {
+        step "1. User requests data (filters)" as ret1
+        step "2. Validate query parameters" as ret2
+        step "3. Apply authorization checks" as ret3
+        step "4. Execute database queries" as ret4
+        step "5. Transform & format data" as ret5
+        step "6. Return paginated results" as ret6
+    }
+    
+    ' Report Generation Flow
+    process "Report Generation Flow" as report_flow {
+        step "1. User selects report criteria" as rep1
+        step "2. Validate date ranges & filters" as rep2
+        step "3. Aggregate data queries" as rep3
+        step "4. Calculate summaries & trends" as rep4
+        step "5. Format for visualization" as rep5
+        step "6. Render charts & tables" as rep6
+    }
+}
+
+' Input Data Flows
+user --> forms : "Enter expense data"
+user --> upload : "Upload receipts"
+forms --> endpoints : "POST/PUT requests"
+upload --> endpoints : "Multipart form data"
+
+' Processing Data Flows
+endpoints --> auth_proc : "Verify JWT token"
+auth_proc --> validation : "Validate request"
+validation --> business : "Apply business logic"
+business --> transform : "Transform data"
+business --> file_proc : "Process files"
+
+' Storage Data Flows
+transform --> db : "SQL queries"
+file_proc --> files : "Save files"
+auth_proc --> local_storage : "Store tokens"
+
+' Output Data Flows
+db --> api_response : "Query results"
+files --> static_files : "Serve files"
+api_response --> ui_components : "JSON data"
+ui_components --> charts : "Render visualizations"
+
+' Detailed Flow Annotations
+note right of auth_flow
+  <b>Authentication Data Types:</b>
+  • Login: email, password
+  • Register: email, password, name
+  • Token: JWT with user ID & claims
+  • Response: user object + token
+  
+  <b>Security Measures:</b>
+  • Password hashing (bcrypt)
+  • JWT signature verification
+  • Token expiration handling
+  • Input sanitization
+end note
+
+note right of expense_flow
+  <b>Expense Data Structure:</b>
+  • amount: decimal(10,2)
+  • description: string(255)
+  • date: ISO date
+  • category_id: foreign key
+  • receipt: file upload (optional)
+  • tags: JSON array
+  • notes: text(1000)
+  
+  <b>Validation Rules:</b>
+  • Amount > 0
+  • Date <= today
+  • Category exists & accessible
+  • File size < 10MB
+end note
+
+note left of retrieve_flow
+  <b>Query Parameters:</b>
+  • category_id: filter by category
+  • start_date/end_date: date range
+  • search: text search in desc/notes
+  • page/limit: pagination
+  • sort_by/sort_order: ordering
+  
+  <b>Response Format:</b>
+  • expenses: array of expense objects
+  • pagination: page info
+  • summary: totals & averages
+end note
+
+note left of report_flow
+  <b>Report Types:</b>
+  • Monthly summaries
+  • Category breakdowns  
+  • Trend analysis
+  • Comparative reports
+  
+  <b>Visualization Data:</b>
+  • Chart.js datasets
+  • Aggregated totals
+  • Percentage calculations
+  • Time series data
+end note
+
+' Data State Management
+package "Frontend State Management" as state {
+    storage "Auth Context\nState" as auth_state
+    storage "Expense Context\nState" as expense_state
+    storage "Component\nLocal State" as local_state
+}
+
+ui_components --> auth_state : "Update auth state"
+ui_components --> expense_state : "Update expense state"
+ui_components --> local_state : "Form state"
+
+' Error Handling Flow
+package "Error Handling" as errors {
+    process "Validation Errors" as val_errors
+    process "Authentication Errors" as auth_errors
+    process "Database Errors" as db_errors
+    process "File Upload Errors" as file_errors
+}
+
+validation -.-> val_errors : "Invalid input"
+auth_proc -.-> auth_errors : "Invalid token"
+transform -.-> db_errors : "Query failure"  
+file_proc -.-> file_errors : "Upload failure"
+
+val_errors -.-> ui_components : "Display errors"
+auth_errors -.-> ui_components : "Redirect to login"
+db_errors -.-> ui_components : "Show error message"
+file_errors -.-> ui_components : "Upload feedback"
+
+@enduml
