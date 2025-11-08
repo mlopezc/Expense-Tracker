@@ -92,7 +92,7 @@ SHOW_LEGEND()
 @enduml
 ```
 
-![Diagrama de Contexto](/context.png)
+![Diagrama de Contexto](context.png)
 ---
 
 ## 3. Descripción del Sistema

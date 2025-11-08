@@ -181,7 +181,7 @@ end note
 @enduml
 ```
 
-![Diagrama de Contexto](/components-1.png)
+![Diagrama de Componentes Web](components-1.png)
 ---
 
 ## 3. Componentes Principales

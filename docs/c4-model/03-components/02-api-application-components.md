@@ -178,7 +178,7 @@ end note
 @enduml
 ```
 
-![Diagrama de Contexto](/components-2.png)
+![Diagrama de Componentes API](components-2.png)
 ---
 
 ## 3. Componentes Principales

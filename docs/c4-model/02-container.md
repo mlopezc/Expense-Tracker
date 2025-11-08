@@ -142,7 +142,7 @@ end note
 @enduml
 ```
 
-![Diagrama de Contexto](/container.png)
+![Diagrama de Contenedores](container.png)
 ---
 
 ## 3. Descripción de Contenedores
