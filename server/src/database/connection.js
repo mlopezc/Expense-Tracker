@@ -50,7 +50,17 @@ class Database {
           reject(err);
         } else {
           console.log('Database tables initialized');
-          
+
+          // Older versions stored expense dates as epoch milliseconds;
+          // convert them to YYYY-MM-DD so filters and sorting work.
+          try {
+            await this.run(
+              "UPDATE expenses SET date = strftime('%Y-%m-%d', date / 1000, 'unixepoch') WHERE typeof(date) IN ('integer', 'real')"
+            );
+          } catch (migrationError) {
+            console.error('Date normalization error:', migrationError);
+          }
+
           // Seed default data
           try {
             const Seeder = require('./seeder');

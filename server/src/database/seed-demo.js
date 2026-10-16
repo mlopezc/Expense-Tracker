@@ -58,9 +58,7 @@ async function seedDemo() {
     await Expense.create({
       amount,
       description,
-      // Same conversion the API applies (Joi.date() turns the ISO string into a
-      // Date), so demo rows are stored exactly like rows created from the app.
-      date: new Date(isoDate(monthsAgo, day)),
+      date: isoDate(monthsAgo, day),
       categoryId: categoryId[category]
     }, user.id);
   }

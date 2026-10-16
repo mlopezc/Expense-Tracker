@@ -23,8 +23,11 @@ function ExpenseList({ expenses, pagination, onEdit, onPageChange, loading }) {
     }
   }
 
+  // Dates come as YYYY-MM-DD; parse them as local dates so time zones west of
+  // UTC don't show the previous day.
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    const [year, month, day] = String(dateString).slice(0, 10).split('-').map(Number)
+    return new Date(year, month - 1, day).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
