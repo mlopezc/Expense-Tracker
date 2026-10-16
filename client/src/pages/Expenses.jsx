@@ -78,6 +78,7 @@ function Expenses() {
         <button 
           className="btn btn-primary"
           onClick={handleAddExpense}
+          data-testid="add-expense-button"
         >
           Add Expense
         </button>

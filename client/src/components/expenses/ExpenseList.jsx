@@ -84,7 +84,7 @@ function ExpenseList({ expenses, pagination, onEdit, onPageChange, loading }) {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {expenses.map((expense) => (
-                  <tr key={expense.id} className="hover:bg-gray-50">
+                  <tr key={expense.id} className="hover:bg-gray-50" data-testid="expense-row">
                     <td className="px-6 py-4">
                       <div>
                         <div className="text-sm font-medium text-gray-900">
@@ -136,12 +136,14 @@ function ExpenseList({ expenses, pagination, onEdit, onPageChange, loading }) {
                       <div className="flex space-x-2">
                         <button
                           onClick={() => onEdit(expense)}
+                          data-testid="expense-edit"
                           className="text-blue-600 hover:text-blue-900"
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => handleDelete(expense)}
+                          data-testid="expense-delete"
                           disabled={deletingId === expense.id}
                           className="text-red-600 hover:text-red-900 disabled:opacity-50"
                         >
@@ -165,6 +167,7 @@ function ExpenseList({ expenses, pagination, onEdit, onPageChange, loading }) {
               <div
                 key={expense.id}
                 className="border border-gray-200 rounded-lg p-4"
+                data-testid="expense-card"
               >
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex-1">
@@ -213,12 +216,14 @@ function ExpenseList({ expenses, pagination, onEdit, onPageChange, loading }) {
                 <div className="flex justify-end space-x-2 pt-2 border-t border-gray-200">
                   <button
                     onClick={() => onEdit(expense)}
+                    data-testid="expense-edit"
                     className="text-sm text-blue-600 hover:text-blue-900"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(expense)}
+                    data-testid="expense-delete"
                     disabled={deletingId === expense.id}
                     className="text-sm text-red-600 hover:text-red-900 disabled:opacity-50"
                   >

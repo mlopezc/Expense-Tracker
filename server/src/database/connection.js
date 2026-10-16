@@ -2,13 +2,30 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
 
+// SQLITE_DB_PATH may be ':memory:' (used by tests) or a path relative to the
+// server/ folder. Without it, the database lives next to this file.
+function resolveDbPath() {
+  const configured = process.env.SQLITE_DB_PATH;
+  if (!configured) {
+    return path.join(__dirname, 'expense_tracker.db');
+  }
+  if (configured === ':memory:') {
+    return configured;
+  }
+  return path.resolve(__dirname, '..', '..', configured);
+}
+
 class Database {
   constructor() {
     this.db = null;
-    this.dbPath = path.join(__dirname, 'expense_tracker.db');
   }
 
   async connect() {
+    this.dbPath = resolveDbPath();
+    if (this.dbPath !== ':memory:') {
+      fs.mkdirSync(path.dirname(this.dbPath), { recursive: true });
+    }
+
     return new Promise((resolve, reject) => {
       this.db = new sqlite3.Database(this.dbPath, (err) => {
         if (err) {
