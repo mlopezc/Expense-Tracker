@@ -170,7 +170,7 @@ function ExpenseForm({ expense, onClose, onSuccess }) {
           </div>
 
           {error && (
-            <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded" data-testid="expense-form-error">
               {error}
             </div>
           )}
@@ -185,6 +185,7 @@ function ExpenseForm({ expense, onClose, onSuccess }) {
                   <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
                   <input
                     id="amount"
+                    data-testid="expense-amount"
                     name="amount"
                     type="number"
                     step="0.01"
@@ -208,6 +209,7 @@ function ExpenseForm({ expense, onClose, onSuccess }) {
                 </label>
                 <input
                   id="date"
+                  data-testid="expense-date"
                   name="date"
                   type="date"
                   required
@@ -227,6 +229,7 @@ function ExpenseForm({ expense, onClose, onSuccess }) {
               </label>
               <input
                 id="description"
+                data-testid="expense-description"
                 name="description"
                 type="text"
                 required
@@ -246,6 +249,7 @@ function ExpenseForm({ expense, onClose, onSuccess }) {
               </label>
               <select
                 id="categoryId"
+                data-testid="expense-category"
                 name="categoryId"
                 required
                 className={`input-field ${formErrors.categoryId ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
@@ -270,6 +274,7 @@ function ExpenseForm({ expense, onClose, onSuccess }) {
               </label>
               <textarea
                 id="notes"
+                data-testid="expense-notes"
                 name="notes"
                 rows={3}
                 className={`input-field ${formErrors.notes ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
@@ -336,6 +341,7 @@ function ExpenseForm({ expense, onClose, onSuccess }) {
               </button>
               <button
                 type="submit"
+                data-testid="expense-submit"
                 className="btn btn-primary flex items-center"
                 disabled={loading}
               >

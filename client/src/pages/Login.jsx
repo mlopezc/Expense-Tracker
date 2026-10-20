@@ -90,7 +90,7 @@ function Login() {
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded" data-testid="login-error">
               {error}
             </div>
           )}
@@ -102,6 +102,7 @@ function Login() {
               </label>
               <input
                 id="email"
+                data-testid="login-email"
                 name="email"
                 type="email"
                 autoComplete="email"
@@ -122,6 +123,7 @@ function Login() {
               </label>
               <input
                 id="password"
+                data-testid="login-password"
                 name="password"
                 type="password"
                 autoComplete="current-password"
@@ -140,6 +142,7 @@ function Login() {
           <div>
             <button
               type="submit"
+              data-testid="login-submit"
               disabled={loading}
               className="btn btn-primary w-full flex justify-center items-center"
             >

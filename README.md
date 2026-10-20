@@ -57,15 +57,20 @@ npm run install:all
 3. Set up environment variables
 ```bash
 cp server/.env.example server/.env
-# Edit server/.env with your configuration
+# Edit server/.env and set JWT_SECRET and JWT_REFRESH_SECRET
 ```
 
-4. Initialize the database
+4. Database: it is created automatically (with the default categories) the first time the server starts. Optionally, load demo data:
 ```bash
-cd server
-npm run db:migrate
-npm run db:seed
+npm run seed:demo
+# Demo user: demo@expense-tracker.dev / demo1234
 ```
+
+### Running the Tests
+```bash
+npm test
+```
+For tests, set `SQLITE_DB_PATH=:memory:` so they never touch your development database. The Express app is exported from `server/src/app.js` without starting the server, so it can be used directly with supertest.
 
 ### Running the Application
 

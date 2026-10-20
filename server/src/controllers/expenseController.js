@@ -2,10 +2,15 @@ const Expense = require('../models/Expense');
 const Category = require('../models/Category');
 const Joi = require('joi');
 
+// Expense dates are calendar dates. Joi.date() would turn them into Date
+// objects, which SQLite stores as epoch milliseconds; keep the YYYY-MM-DD part
+// of the ISO input instead so stored values and date filters compare as text.
+const dateOnly = Joi.date().iso().custom((value, helpers) => helpers.original.slice(0, 10));
+
 const expenseSchema = Joi.object({
   amount: Joi.number().positive().precision(2).required(),
   description: Joi.string().trim().min(1).max(255).required(),
-  date: Joi.date().iso().required(),
+  date: dateOnly.required(),
   categoryId: Joi.number().integer().positive().required(),
   receiptFilename: Joi.string().trim().max(255).allow(null).optional(),
   tags: Joi.array().items(Joi.string().trim().max(50)).max(10).optional(),
@@ -15,7 +20,7 @@ const expenseSchema = Joi.object({
 const updateExpenseSchema = Joi.object({
   amount: Joi.number().positive().precision(2).optional(),
   description: Joi.string().trim().min(1).max(255).optional(),
-  date: Joi.date().iso().optional(),
+  date: dateOnly.optional(),
   categoryId: Joi.number().integer().positive().optional(),
   receiptFilename: Joi.string().trim().max(255).allow(null).optional(),
   tags: Joi.array().items(Joi.string().trim().max(50)).max(10).optional(),
@@ -24,8 +29,8 @@ const updateExpenseSchema = Joi.object({
 
 const querySchema = Joi.object({
   category_id: Joi.number().integer().positive().optional(),
-  start_date: Joi.date().iso().optional(),
-  end_date: Joi.date().iso().optional(),
+  start_date: dateOnly.optional(),
+  end_date: dateOnly.optional(),
   search: Joi.string().trim().max(100).optional(),
   page: Joi.number().integer().min(1).default(1),
   limit: Joi.number().integer().min(1).max(100).default(20),
