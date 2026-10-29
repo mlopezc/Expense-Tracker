@@ -5,10 +5,24 @@ const Joi = require('joi');
 // Expense dates are calendar dates. Joi.date() would turn them into Date
 // objects, which SQLite stores as epoch milliseconds; keep the YYYY-MM-DD part
 // of the ISO input instead so stored values and date filters compare as text.
-const dateOnly = Joi.date().iso().custom((value, helpers) => helpers.original.slice(0, 10));
+// Joi.date() rolls impossible days over (2026-02-30 → 2026-03-02), so the
+// YYYY-MM-DD part is checked on its own against the real calendar.
+const isCalendarDate = (yyyyMmDd) => {
+  const [year, month, day] = yyyyMmDd.split('-').map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
+};
+
+const dateOnly = Joi.date().iso().custom((value, helpers) => {
+  const yyyyMmDd = helpers.original.slice(0, 10);
+  return isCalendarDate(yyyyMmDd) ? yyyyMmDd : helpers.error('date.base');
+});
+
+// Same limit the client form enforces.
+const MAX_AMOUNT = 999999.99;
 
 const expenseSchema = Joi.object({
-  amount: Joi.number().positive().precision(2).required(),
+  amount: Joi.number().positive().max(MAX_AMOUNT).precision(2).required(),
   description: Joi.string().trim().min(1).max(255).required(),
   date: dateOnly.required(),
   categoryId: Joi.number().integer().positive().required(),
@@ -18,7 +32,7 @@ const expenseSchema = Joi.object({
 });
 
 const updateExpenseSchema = Joi.object({
-  amount: Joi.number().positive().precision(2).optional(),
+  amount: Joi.number().positive().max(MAX_AMOUNT).precision(2).optional(),
   description: Joi.string().trim().min(1).max(255).optional(),
   date: dateOnly.optional(),
   categoryId: Joi.number().integer().positive().optional(),

@@ -11,7 +11,12 @@
     "start": "cd server && npm start",
     "test": "cd server && npm test",
     "seed:demo": "cd server && npm run seed:demo",
-    "install:all": "npm install && cd client && npm install && cd ../server && npm install"
+    "install:all": "npm install && cd client && npm install && cd ../server && npm install",
+    "e2e:server": "cd server && mkdir -p .e2e && rm -f .e2e/e2e.db && SQLITE_DB_PATH=.e2e/e2e.db JWT_SECRET=e2e-secret NODE_ENV=test PORT=3001 node server.js",
+    "e2e:client": "cd client && BROWSER=none npm run dev -- --host 127.0.0.1",
+    "e2e:app": "concurrently -n server,client \"npm run e2e:server\" \"npm run e2e:client\"",
+    "e2e": "cypress run",
+    "test:e2e": "concurrently -k -s command-cypress -n server,client,cypress \"npm run e2e:server\" \"npm run e2e:client\" \"node scripts/wait-for-app.js && cypress run\""
   },
   "keywords": [
     "expense",
@@ -23,6 +28,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "cypress": "15.1.0"
   }
 }

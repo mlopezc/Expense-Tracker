@@ -24,6 +24,7 @@ function Sidebar() {
                   }`
                 }
                 end={item.href === '/'}
+                data-testid={`nav-${item.name.toLowerCase()}`}
               >
                 <span
                   className="mr-3 text-lg flex-shrink-0"

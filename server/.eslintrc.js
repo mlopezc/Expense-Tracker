@@ -18,4 +18,10 @@ module.exports = {
     'no-unused-vars': ['error', { 'argsIgnorePattern': 'req|res|next|val' }],
     'no-console': 'off',
   },
+  overrides: [
+    {
+      files: ['tests/**/*.js'],
+      env: { jest: true },
+    },
+  ],
 };

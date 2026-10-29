@@ -55,3 +55,8 @@ Thumbs.db
 
 # Local Claude Code settings
 .claude/settings.local.json
+
+# E2E
+server/.e2e/
+cypress/screenshots/
+cypress/videos/
